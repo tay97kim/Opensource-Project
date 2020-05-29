@@ -37,7 +37,7 @@ def find_schedule():
     i=0
     for i in range(0, 15):
         setDate = (nowDate+timedelta(days=i))
-        getDate = setDate.strftime('%#m_%#d')
+        getDate = setDate.strftime('%#m_%#d') #윈도우에서는 #로 0을 제거하지만, 우분투 환경에서는 #가 아닌 -를 통해 0 제거가 필요함
         driver.find_element_by_id(getDate).click() #오늘날짜까지 출력 완료
         print("["+getDate+"]") #날짜 출력
         
