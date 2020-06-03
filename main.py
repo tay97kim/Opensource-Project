@@ -8,22 +8,33 @@ import selenium.webdriver.common.by
 from selenium.webdriver.common.by import By
 import os
 import time
+
 from datetime import datetime, timedelta
 #options = Options()
 #options.add_argument('--headless')
 #options.add_argument('--no-sandbox')
 
-loginUrl = 'https://sso.daegu.ac.kr/dgusso/ext/lms/login_form.do?Return_Url=http://lms.daegu.ac.kr/ilos/lo/login_sso.acl'
-# https://sso.daegu.ac.kr/dgusso/ext/attend/login_form.do?Return_Url=http://attend.daegu.ac.kr > attendance
-# https://sso.daegu.ac.kr/dgusso/ext/lms/login_form.do?Return_Url=http://lms.daegu.ac.kr/ilos/lo/login_sso.acl > lms
+attend = 'https://sso.daegu.ac.kr/dgusso/ext/attend/login_form.do?Return_Url=http://attend.daegu.ac.kr' # attendance
+schedule = 'https://sso.daegu.ac.kr/dgusso/ext/lms/login_form.do?Return_Url=http://lms.daegu.ac.kr/ilos/lo/login_sso.acl' # lms
 
 driver = selenium.webdriver.Chrome()
 
-def login_service():
-	driver.get(loginUrl)
+def login_service_attend():
+	driver.get(attend)
 
-	username='21630209'
-	password='@@@k2i6m4t3s'
+	username=''
+	password=''
+
+	driver.find_element_by_id('usr_id').send_keys(username)
+	driver.find_element_by_id('usr_pw').send_keys(password)
+
+	driver.find_element_by_class_name('btn_login').click()
+
+def login_service_schedule():
+	driver.get(schedule)
+
+	username=''
+	password=''
 
 	driver.find_element_by_id('usr_id').send_keys(username)
 	driver.find_element_by_id('usr_pw').send_keys(password)
@@ -38,7 +49,7 @@ def attendance_info():
 			j = str(i)
 			driver.find_element_by_xpath('//*[@id="list_subject"]/tbody/tr['+j+']').click()
 			
-			temp1 = driver.find_element_by_xpath('//*[@id="course"]/li[1]/label').text + ' : ' + driver.find_element_by_xpath('//*[@id="course"]/li[1]/span').text + '\n' ##
+			temp1 = driver.find_element_by_xpath('//*[@id="course"]/li[1]/label').text + ' : ' + driver.find_element_by_xpath('//*[@id="course"]/li[1]/span').text + '\n'
 			attend += temp1
 
 			temp2 = driver.find_element_by_xpath('//*[@id="summary"]').text + '\n'
@@ -51,7 +62,7 @@ def attendance_info():
 		eattend = attend.encode('utf-8')
 		file = open('/home/tay97kim/attendance_output_Kim.txt', 'w')
 
-		file.write(eattend)##
+		file.write(eattend)
 		
 		file.close()
 		driver.quit
@@ -59,6 +70,7 @@ def attendance_info():
 
 
 def find_schedule():
+
 	nowDate = datetime.now()
 	limit = 0 #일정 개수 카운트 변수
 	i=0
@@ -67,11 +79,7 @@ def find_schedule():
 		setDate = (nowDate+timedelta(days=i))
 		getDate = setDate.strftime('%-m_%-d')
 		driver.find_element_by_id(getDate).click()
-		temp = getDate.split('_')
-		temp_cat = temp[0]+'월 '+temp[1]+'일'
-		print(temp_cat)
-		sche += temp_cat+'\n' #날짜 기록
-		print(sche)
+		sche += getDate+'\n' #날짜 기록
         
 		try:
 			sche += driver.find_element_by_xpath('//*[@id="shedule_calendar_form"]/div[2]').text+'\n' #해당일자 일정 기록
@@ -105,10 +113,11 @@ def find_schedule():
 if __name__ == "__main__":
 
 
-	login_service()
-	time.sleep(1)
-	#attendance_info()
-	find_schedule()
+	#login_service_attend()
 	#time.sleep(1)
-	#my_course()
+	#attendance_info()
+	#time.sleep(1)
+	login_service_schedule()
+	time.sleep(1)
+	find_schedule()
 
