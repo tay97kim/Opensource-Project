@@ -1,0 +1,25 @@
+1.1. CSR 생성(Certificate Signing Request - 인증서 서명 요청)
+명령어 : openssl req -new -key private.pem –out private.csr
+1.1. CRT 인증서 만들기
+명령어 : openssl x509 -req -days 3650 -in private.csr -signkey private.pem -out private.crt
+1.1. 개인 사용자를 위한 인증서 서명 요청서 발급
+openssl req -new -keyout AlicePriv.pem –subj \
+'/C=KR/ST=CA-State/O=Hanti/CN=Alice' -out Alicepriv.csr
+1.1. 개인 사용자(송신)를 위한 인증서 발급
+openssl x509 -req -days 3650 -CA private.crt -CAkey private.pem -CAcreateserial -in Alicepriv.csr -out Alicecert.crt
+
+1.2. 인증서 검증
+CA에서 등록할 때 받은 roto certificate private.crt 와 CA에게 신청하여 받은 자신의 인증서 Alicecert.crt을 검증
+openssl verify -CAfile private.crt Alicecert.crt
+
+1.3. 새로운 사용자(수신)에 대한 인증서 발급
+openssl req -new -keyout bobPriv.pem –subj 
+'/C=KR/ST=CA-State/O=Hanti/CN=bob' -out bobpriv.csr
+
+openssl x509 -req -days 3650 -CA private.crt -CAkey private.pem -CAcreateserial -in bobpriv.csr –out bobCert.crt
+
+2. 인증서를 이용한 문서(메세지, 이메일) 서명 및 검증
+2.1. Alice의 서명 및 암호화(송신)
+openssl smime -sign -in secret.txt -signer Alicecert.crt -inkey AlicePriv.pem -text -out signed.msg
+
+openssl smime -encrypt -in signed.msg -out sien.msg -from Alice -to Bob -subject "Sign and Encryption test" -aes128 bobCert.crt
