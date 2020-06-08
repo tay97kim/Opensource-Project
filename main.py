@@ -94,20 +94,6 @@ def find_schedule():
 		
 	file.close()
 	driver.quit
-
-'''def my_course():
-	driver.find_element_by_class_name('icon-nm').click()
-	lecture_count = 2
-	while(True):
-		try:
-			count_str = str(lecture_count)
-			print(driver.find_element_by_xpath('//*[@id="lecture_list"]/div[1]/div[1]/div['+count_str+']').text)
-			lecture_count = lecture_count+1
-			print("")
-		except:
-			break #정규과목 존재하지 않을 때 종료
-	driver.quit''' #미사용
-    
         
 
 if __name__ == "__main__":
